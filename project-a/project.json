@@ -1,3 +1,11 @@
 {
-    "id": "project-a"
+    "id": "project-a",
+    "targets": {
+        "prepare": {
+            "executor": "nx:run-command",
+            "options": {
+                "command": "echo file-a.ts"
+            }
+        }
+    }
 }

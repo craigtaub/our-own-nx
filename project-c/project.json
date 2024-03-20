@@ -1,3 +1,19 @@
 {
-    "id": "project-c"
+    "id": "project-c",
+    "targets": {
+        "prepare": {
+            "executor": "nx:run-command",
+            "options": {
+                "command": "echo file-c.ts"
+            }
+        },
+        "test": {
+            "executor": "@nx/jest:jest",
+            "options": {
+                "codeCoverage": true
+            },
+            "dependsOn": ["prepare", "^prepare"]
+        }
+
+    }
 }

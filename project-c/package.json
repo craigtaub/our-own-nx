@@ -1,0 +1,10 @@
+{
+    "name": "@under-the-hood-nx/project-c",
+    "version": "0.1.0",
+    "description": "",
+    "dependencies": {
+      "@under-the-hood-nx/project-a": "workspace:*",
+      "@under-the-hood-nx/project-b": "workspace:*"
+    }
+  }
+  
