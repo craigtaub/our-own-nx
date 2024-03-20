@@ -2,13 +2,37 @@
 import * as fs from 'fs';
 import * as path from 'path';
 
+interface ProjectConfig {
+    id: string;
+    targets: any;
+}
+interface PackageConfig {
+    name: string;
+    version: string;
+    description: string;
+    dependencies: any;
+}
 interface FolderContents {
     folderPath: string;
-    projectJson: string;
-    packageJson: string;
+    projectJson: ProjectConfig;
+    packageJson: PackageConfig;
 }
 
-export function getProjects(currentPath: string): FolderContents[] {
+type Projects = FolderContents[];
+
+interface ProjectDependencies {
+    name: string;
+    dependencies: string[];
+}
+
+export function processDependencies(projects: Projects): ProjectDependencies[] {
+    return projects.map(project => ({
+        name: project.projectJson.id,
+        dependencies: Object.keys(project.packageJson.dependencies)
+    }))
+}
+
+export function getProjects(currentPath: string): Projects {
     const rawItems = fs.readdirSync(currentPath);
     const items = rawItems.filter(folder => !['node_modules', '.git', 'nx'].includes(folder))
     const projects = new Array();
