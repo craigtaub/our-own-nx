@@ -1,60 +1,54 @@
+
 import * as fs from 'fs';
 import * as path from 'path';
 
-interface Config {
-    namedInputs: object 
-    targetDefaults: object
-}
-interface Target {
-    name: string
-    dependsOn: string[];
+interface FolderContents {
+    folderPath: string;
+    projectJson: string;
+    packageJson: string;
 }
 
-interface ProjectData {
-    project: string;
-    targets: Target[];
-    dependencies: string[];
-}
+export function getProjects(currentPath: string): FolderContents[] {
+    const rawItems = fs.readdirSync(currentPath);
+    const items = rawItems.filter(folder => !['node_modules', '.git', 'nx'].includes(folder))
+    const projects = new Array();
+    for (const item of items) {
+        const itemPath = path.join(currentPath, item);
+        const stats = fs.statSync(itemPath);
 
-export function readProjectJsonFiles(dir: string): ProjectData[] {
-    const projectData: ProjectData[] = [];
-
-    function readDirRecursive(currentDir: string) {
-        const files = fs.readdirSync(currentDir);
-
-        for (const file of files) {
-            const filePath = path.join(currentDir, file);
-            const stat = fs.statSync(filePath);
-
-            if (stat.isDirectory()) {
-                readDirRecursive(filePath);
-            // } else {
-
-            } else if (file === 'project.json' || file === 'package.json') {
-                try {
-                    const content = JSON.parse(fs.readFileSync(filePath, 'utf8'));
-                    // for (const target in content.targets) {
-                    
-                    projectData.push({ project: content.id, targets: content.targets, dependencies: content.dependencies });
-                        // dependsOn: content.targets[target]?.dependsOn || null 
-                    // }
-                } catch (error: any) {
-                    throw new Error(`Error reading ${file}: ${error.message}`);
-                }
-            }
+        if (stats.isDirectory()) {
+            projects.push(processFolder(itemPath));
+            getProjects(itemPath); // Recurse into subfolders
         }
     }
-
-    readDirRecursive(dir);
-    return projectData;
+    return projects
 }
 
+function processFolder(folderPath: string): FolderContents {
+    const packageJsonPath = path.join(folderPath, 'package.json');
+    const projectJsonPath = path.join(folderPath, 'project.json');
 
-export function readConfig (): Config {
-    const filePath = path.join(process.cwd(), 'nx.json');
-    return JSON.parse(fs.readFileSync(filePath, 'utf8'))
+    const packageJson = readJsonFile(packageJsonPath);
+    const projectJson = readJsonFile(projectJsonPath);
+
+    return {
+        folderPath,
+        projectJson,
+        packageJson
+    }
 }
 
+function readJsonFile(filePath: string): any {
+    try {
+        const fileContents = fs.readFileSync(filePath, 'utf8');
+        return JSON.parse(fileContents);
+    } catch (error: any) {
+        console.error(`Error reading ${filePath}: ${error.message}`);
+        return null;
+    }
+}
+
+// -------> OLD
 
 // build a new array off projects
 // for each project
@@ -68,8 +62,8 @@ export function readConfig (): Config {
             // grab name
             // filter projects array for index of matching project + target, return index
 
-export function transform (rawProjects: ProjectData[], config: Config) {
-    
+// export function transform (rawProjects, config) {
+
     // const projects = rawProjects.map(project => {
     //     if (project.dependsOn) {
     //         project.dependsOn.map(dependent => {
@@ -83,5 +77,5 @@ export function transform (rawProjects: ProjectData[], config: Config) {
     //     }
     // });
     
-    return rawProjects
-}
+    // return rawProjects
+// }

@@ -1,5 +1,5 @@
 {
-    "id": "project-a",
+    "id": "project-b",
     "targets": {
         "prepare": {
             "executor": "nx:run-command",
