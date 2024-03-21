@@ -2,30 +2,25 @@
 import * as fs from 'fs';
 import * as path from 'path';
 
-interface ProjectConfig {
-    id: string;
-    targets: any;
-}
-interface PackageConfig {
-    name: string;
-    version: string;
-    description: string;
-    dependencies: any;
-}
-interface FolderContents {
-    folderPath: string;
-    projectJson: ProjectConfig;
-    packageJson: PackageConfig;
-}
+import { Projects, ProjectDependencies, FolderContents } from './types'
 
-type Projects = FolderContents[];
-
-interface ProjectDependencies {
-    name: string;
-    dependencies: string[];
+export function processTaskDependencies(projects: Projects, projectDependencies: ProjectDependencies[]) {
+        // for each project
+    projects.map(project => {
+        // for each target
+        Object.keys(project.projectJson.targets).map(target => {
+            
+            const dependsOn = project.projectJson.targets[target].dependsOn;
+            // if target has dependents
+            if (dependsOn) {
+                // HERE
+            }
+        })
+    })
+    
+    return ''
 }
-
-export function processDependencies(projects: Projects): ProjectDependencies[] {
+export function processProjectDependencies(projects: Projects): ProjectDependencies[] {
     return projects.map(project => ({
         name: project.projectJson.id,
         dependencies: Object.keys(project.packageJson.dependencies)
