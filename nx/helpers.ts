@@ -2,66 +2,114 @@
 import * as fs from 'fs';
 import * as path from 'path';
 
-import { Projects, ProjectDependencies, FolderContents } from './types'
+import { Projects, ProjectDependencies, FolderContents, SimpleObject } from './types'
 
 
 // project-a
-    // prepare
-        // deps: null
-        // command
+    // targets
+        // prepare
+            // deps: null
+            // command
 // project-b
-    // prepare
-        // deps: null
-        // command
+    // targets
+        // prepare
+            // deps: null
+            // command
 // project-c
-    // prepare
-        // deps: null
-        // command
-    // test
-        // deps: [
-            // this.project-c.prepare // this project
-            // this.project-a.prepare
-            // this.project-a.prepare
-        // ]
+    // targets
+        // prepare
+            // deps: null
+            // command
+        // test
+            // deps: [
+                // this.project-c.prepare // this project
+                // this.project-a.prepare
+                // this.project-a.prepare
+            // ]
 export function processTaskDependencies(projects: Projects, projectDependencies: ProjectDependencies[]) {
-    // for each project
-    projects.map(project => {
-        // for each target
-        Object.keys(project.projectJson.targets).map(target => {
-            
+    
+    const projectWithTaskDeps = projects.reduce((previousValue: any, project: FolderContents, index: number, projects: Projects) => {
+        const targets = Object.keys(project.projectJson.targets).reduce((acc: SimpleObject, target: string) => {
             const dependsOn = project.projectJson.targets[target].dependsOn;
-            
-            // TODO - targetDefaults
-
-            // if target has dependents
+            // TODO - type
+            let dependencies: any = null;
             if (dependsOn) {
-                console.log('project with dependsOn', project.packageJson.name)
-                // for each dep
                 dependsOn.map(dependent => {
                     if (dependent[0] === '^') {
                         // grab task dep for all project dependents
                         const taskFromProjects = dependent.slice(1);
-                        console.log('taskFromProjects', taskFromProjects)
+                        // console.log('taskFromProjects', taskFromProjects)
                         const commandsToRun = projects
                             .filter(tmpProject => tmpProject.packageJson.name !== project.packageJson.name)
                             .map(tmpProject => ({
                                 command: tmpProject.projectJson.targets[taskFromProjects],
                                 project: tmpProject.projectJson.id
                             }));
-                        console.log('commandsToRun', commandsToRun)
+                        dependencies = commandsToRun
+                        // console.log('commandsToRun', commandsToRun)
                         
                     } else {
                         // grab task dep for this project
                         const taskFromThisProject = dependent
-                        console.log('taskFromThisProject', taskFromThisProject)
+                        // console.log('taskFromThisProject', taskFromThisProject)
                         const commandFromThisProject = project.projectJson.targets[taskFromThisProject]
-                        console.log('commandFromThisProject', commandFromThisProject)
-                    }
-                    
+                        // console.log('commandFromThisProject', commandFromThisProject)
+                        dependencies = commandFromThisProject
+                    }   
                 });
             }
-        })
-    })
+            acc[target] = {
+                ...project.projectJson.targets[target],
+                dependencies,
+            };
+            return acc;
+        }, {})
+        previousValue[project.projectJson.id] =  { targets }
+        return previousValue;
+    }, {})
+
+    // FIX THIS
+    console.log('projectWithTaskDeps', projectWithTaskDeps['project-c'].targets.test.dependencies)
+
+    // OLD FORMAT
+    // for each project
+    // projects.map(project => {
+    //     // for each target
+    //     Object.keys(project.projectJson.targets).map(target => {
+            
+    //         const dependsOn = project.projectJson.targets[target].dependsOn;
+            
+    //         // TODO - targetDefaults
+
+    //         // if target has dependents
+    //         if (dependsOn) {
+    //             // console.log('project with dependsOn', project.packageJson.name)
+    //             // for each dep
+    //             dependsOn.map(dependent => {
+    //                 if (dependent[0] === '^') {
+    //                     // grab task dep for all project dependents
+    //                     const taskFromProjects = dependent.slice(1);
+    //                     // console.log('taskFromProjects', taskFromProjects)
+    //                     const commandsToRun = projects
+    //                         .filter(tmpProject => tmpProject.packageJson.name !== project.packageJson.name)
+    //                         .map(tmpProject => ({
+    //                             command: tmpProject.projectJson.targets[taskFromProjects],
+    //                             project: tmpProject.projectJson.id
+    //                         }));
+    //                     // console.log('commandsToRun', commandsToRun)
+                        
+    //                 } else {
+    //                     // grab task dep for this project
+    //                     const taskFromThisProject = dependent
+    //                     // console.log('taskFromThisProject', taskFromThisProject)
+    //                     const commandFromThisProject = project.projectJson.targets[taskFromThisProject]
+    //                     // console.log('commandFromThisProject', commandFromThisProject)
+    //                 }
+                    
+    //             });
+    //         }
+    //     })
+    // })
     
     return ''
 }

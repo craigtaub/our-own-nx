@@ -7,6 +7,7 @@ interface Target {
     dependsOn?: string[];
 }
 
+export type SimpleObject = { [key: string]: any }
 type Targets = {
     [key: string]: Target
 }
