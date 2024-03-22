@@ -4,16 +4,61 @@ import * as path from 'path';
 
 import { Projects, ProjectDependencies, FolderContents } from './types'
 
+
+// project-a
+    // prepare
+        // deps: null
+        // command
+// project-b
+    // prepare
+        // deps: null
+        // command
+// project-c
+    // prepare
+        // deps: null
+        // command
+    // test
+        // deps: [
+            // this.project-c.prepare // this project
+            // this.project-a.prepare
+            // this.project-a.prepare
+        // ]
 export function processTaskDependencies(projects: Projects, projectDependencies: ProjectDependencies[]) {
-        // for each project
+    // for each project
     projects.map(project => {
         // for each target
         Object.keys(project.projectJson.targets).map(target => {
             
             const dependsOn = project.projectJson.targets[target].dependsOn;
+            
+            // TODO - targetDefaults
+
             // if target has dependents
             if (dependsOn) {
-                // HERE
+                console.log('project with dependsOn', project.packageJson.name)
+                // for each dep
+                dependsOn.map(dependent => {
+                    if (dependent[0] === '^') {
+                        // grab task dep for all project dependents
+                        const taskFromProjects = dependent.slice(1);
+                        console.log('taskFromProjects', taskFromProjects)
+                        const commandsToRun = projects
+                            .filter(tmpProject => tmpProject.packageJson.name !== project.packageJson.name)
+                            .map(tmpProject => ({
+                                command: tmpProject.projectJson.targets[taskFromProjects],
+                                project: tmpProject.projectJson.id
+                            }));
+                        console.log('commandsToRun', commandsToRun)
+                        
+                    } else {
+                        // grab task dep for this project
+                        const taskFromThisProject = dependent
+                        console.log('taskFromThisProject', taskFromThisProject)
+                        const commandFromThisProject = project.projectJson.targets[taskFromThisProject]
+                        console.log('commandFromThisProject', commandFromThisProject)
+                    }
+                    
+                });
             }
         })
     })
