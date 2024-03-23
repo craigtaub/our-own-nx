@@ -9,13 +9,37 @@ const buildGraph = () => {
     const projectDependencies = processProjectDependencies(projects);
     // console.log('projectDependencies', projectDependencies)
 
-    // 3 - detect effected projects
-    const affected = 'project-3' // TODO - use Git cli to check file changes
-
-    // 4 - build task dependencies graph
+    // 3 - build task dependencies graph
     const graphDependencies = processTaskDependencies(projects, projectDependencies)
-    console.log('graphDependencies', graphDependencies)
-    console.log('graphDependencies c test deps', graphDependencies['project-c'].targets.test.dependencies)
+    // console.log('graphDependencies', graphDependencies)
+    // console.log('graphDependencies c test deps', graphDependencies['project-c'].targets.test.dependencies)
+    return graphDependencies;
+
 }
 
-buildGraph();
+const executeTask = (projectTarget: string, graph: any): void => {
+    console.log(`RUN ${projectTarget}`)
+}
+const run = () => {
+    
+    const command = process.argv[2];
+    
+    const graph = buildGraph();
+
+    const affectedProjects = ['project-c'] // TODO - use Git cli to check file changes
+
+    affectedProjects.map((affected) => {
+        // grab command - command located inside "graph[affected].targets[command]"
+        const thisProjectTarget = `${affected}:${command}`
+
+        // grab deps
+        const thisDeps = graph[affected].targets[command].dependencies
+        
+        // execute deps
+        thisDeps.map((dep: string) => executeTask(dep, graph));
+
+        // execute target
+        executeTask(thisProjectTarget, graph)
+    });
+}
+run()
