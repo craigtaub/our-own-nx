@@ -15,6 +15,7 @@ const buildGraph = () => {
     // 4 - build task dependencies graph
     const graphDependencies = processTaskDependencies(projects, projectDependencies)
     console.log('graphDependencies', graphDependencies)
+    console.log('graphDependencies c test deps', graphDependencies['project-c'].targets.test.dependencies)
 }
 
 buildGraph();

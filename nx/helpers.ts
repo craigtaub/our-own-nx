@@ -22,9 +22,9 @@ import { Projects, ProjectDependencies, FolderContents, SimpleObject } from './t
             // command
         // test
             // deps: [
-                // this.project-c.prepare // this project
-                // this.project-a.prepare
-                // this.project-a.prepare
+                // 'project-c:prepare',
+                // 'project-a:prepare',
+                // 'this.project-a:prepare'
             // ]
 export function processTaskDependencies(projects: Projects, projectDependencies: ProjectDependencies[]) {
     
@@ -32,29 +32,31 @@ export function processTaskDependencies(projects: Projects, projectDependencies:
         const targets = Object.keys(project.projectJson.targets).reduce((acc: SimpleObject, target: string) => {
             const dependsOn = project.projectJson.targets[target].dependsOn;
             // TODO - type
-            let dependencies: any = null;
+            const dependencies = new Array();
             if (dependsOn) {
                 dependsOn.map(dependent => {
                     if (dependent[0] === '^') {
                         // grab task dep for all project dependents
                         const taskFromProjects = dependent.slice(1);
-                        // console.log('taskFromProjects', taskFromProjects)
-                        const commandsToRun = projects
+                        // NOTE - list project:target, dont list command itself
+                        // const commandsToRun = projects
+                        //     .filter(tmpProject => tmpProject.packageJson.name !== project.packageJson.name)
+                        //     .map(tmpProject => ({
+                        //         command: tmpProject.projectJson.targets[taskFromProjects],
+                        //         project: tmpProject.projectJson.id
+                        //     }));
+                        const listOfProjectTargets = projects
                             .filter(tmpProject => tmpProject.packageJson.name !== project.packageJson.name)
-                            .map(tmpProject => ({
-                                command: tmpProject.projectJson.targets[taskFromProjects],
-                                project: tmpProject.projectJson.id
-                            }));
-                        dependencies = commandsToRun
-                        // console.log('commandsToRun', commandsToRun)
+                            .map(tmpProject => `${tmpProject.projectJson.id}:${taskFromProjects}`);
+                        dependencies.push(...listOfProjectTargets)
                         
                     } else {
                         // grab task dep for this project
                         const taskFromThisProject = dependent
-                        // console.log('taskFromThisProject', taskFromThisProject)
-                        const commandFromThisProject = project.projectJson.targets[taskFromThisProject]
-                        // console.log('commandFromThisProject', commandFromThisProject)
-                        dependencies = commandFromThisProject
+                        // NOTE - list project:target, dont list command itself
+                        // const commandFromThisProject = project.projectJson.targets[taskFromThisProject]
+                        const projectTarget = `${project.projectJson.id}:${taskFromThisProject}`
+                        dependencies.push(projectTarget)
                     }   
                 });
             }
@@ -68,50 +70,9 @@ export function processTaskDependencies(projects: Projects, projectDependencies:
         return previousValue;
     }, {})
 
-    // FIX THIS
-    console.log('projectWithTaskDeps', projectWithTaskDeps['project-c'].targets.test.dependencies)
-
-    // OLD FORMAT
-    // for each project
-    // projects.map(project => {
-    //     // for each target
-    //     Object.keys(project.projectJson.targets).map(target => {
-            
-    //         const dependsOn = project.projectJson.targets[target].dependsOn;
-            
-    //         // TODO - targetDefaults
-
-    //         // if target has dependents
-    //         if (dependsOn) {
-    //             // console.log('project with dependsOn', project.packageJson.name)
-    //             // for each dep
-    //             dependsOn.map(dependent => {
-    //                 if (dependent[0] === '^') {
-    //                     // grab task dep for all project dependents
-    //                     const taskFromProjects = dependent.slice(1);
-    //                     // console.log('taskFromProjects', taskFromProjects)
-    //                     const commandsToRun = projects
-    //                         .filter(tmpProject => tmpProject.packageJson.name !== project.packageJson.name)
-    //                         .map(tmpProject => ({
-    //                             command: tmpProject.projectJson.targets[taskFromProjects],
-    //                             project: tmpProject.projectJson.id
-    //                         }));
-    //                     // console.log('commandsToRun', commandsToRun)
-                        
-    //                 } else {
-    //                     // grab task dep for this project
-    //                     const taskFromThisProject = dependent
-    //                     // console.log('taskFromThisProject', taskFromThisProject)
-    //                     const commandFromThisProject = project.projectJson.targets[taskFromThisProject]
-    //                     // console.log('commandFromThisProject', commandFromThisProject)
-    //                 }
-                    
-    //             });
-    //         }
-    //     })
-    // })
+    // console.log('project-c test deps', projectWithTaskDeps['project-c'].targets.test.dependencies)
     
-    return ''
+    return projectWithTaskDeps
 }
 export function processProjectDependencies(projects: Projects): ProjectDependencies[] {
     return projects.map(project => ({
@@ -159,6 +120,48 @@ function readJsonFile(filePath: string): any {
         return null;
     }
 }
+
+// -------> OLD 2
+
+// OLD FORMAT
+// for each project
+// projects.map(project => {
+//     // for each target
+//     Object.keys(project.projectJson.targets).map(target => {
+        
+//         const dependsOn = project.projectJson.targets[target].dependsOn;
+        
+//         // TODO - targetDefaults
+
+//         // if target has dependents
+//         if (dependsOn) {
+//             // console.log('project with dependsOn', project.packageJson.name)
+//             // for each dep
+//             dependsOn.map(dependent => {
+//                 if (dependent[0] === '^') {
+//                     // grab task dep for all project dependents
+//                     const taskFromProjects = dependent.slice(1);
+//                     // console.log('taskFromProjects', taskFromProjects)
+//                     const commandsToRun = projects
+//                         .filter(tmpProject => tmpProject.packageJson.name !== project.packageJson.name)
+//                         .map(tmpProject => ({
+//                             command: tmpProject.projectJson.targets[taskFromProjects],
+//                             project: tmpProject.projectJson.id
+//                         }));
+//                     // console.log('commandsToRun', commandsToRun)
+                    
+//                 } else {
+//                     // grab task dep for this project
+//                     const taskFromThisProject = dependent
+//                     // console.log('taskFromThisProject', taskFromThisProject)
+//                     const commandFromThisProject = project.projectJson.targets[taskFromThisProject]
+//                     // console.log('commandFromThisProject', commandFromThisProject)
+//                 }
+                
+//             });
+//         }
+//     })
+// })
 
 // -------> OLD
 
