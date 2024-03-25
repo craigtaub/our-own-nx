@@ -1,16 +1,26 @@
-interface Target {
+export interface TaskGraph {
+    [key: string]: {
+        targets: Targets
+    }
+}
+
+type Targets = {
+    [key: string]: Target
+}
+export interface Target {
     executor: string;
     options: {
         command?: string;
         codeCoverage?: boolean;
     };
     dependsOn?: string[];
+    // optional but defaults
+    inputs?: string[];
+    // processed into object
+    dependencies?: string[];
 }
 
 export type SimpleObject = { [key: string]: any }
-type Targets = {
-    [key: string]: Target
-}
 
 interface ProjectConfig {
     id: string;

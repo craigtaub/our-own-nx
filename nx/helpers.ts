@@ -2,8 +2,26 @@
 import * as fs from 'fs';
 import * as path from 'path';
 
-import { Projects, ProjectDependencies, FolderContents, SimpleObject } from './types'
+import { Projects, ProjectDependencies, FolderContents, SimpleObject, TaskGraph, Target } from './types'
 
+export function getConfig () {
+    const configJsonPath = path.join('./', 'nx.json');
+
+    return readJsonFile(configJsonPath);
+}
+
+function calculateInputHash (inputs: Target['inputs']) {
+    const config = getConfig()
+    if (!inputs) {
+        return 'default-hash'
+    }
+    const namedInputs = config.namedInputs
+    const taskInputs = inputs.map(input => {
+        return namedInputs[input]
+    })
+    
+    return JSON.stringify(taskInputs)
+}
 
 // project-a
     // targets
@@ -26,7 +44,7 @@ import { Projects, ProjectDependencies, FolderContents, SimpleObject } from './t
                 // 'project-a:prepare',
                 // 'this.project-a:prepare'
             // ]
-export function processTaskDependencies(projects: Projects, projectDependencies: ProjectDependencies[]) {
+export function processTaskDependencies(projects: Projects): TaskGraph {
     
     const projectWithTaskDeps = projects.reduce((previousValue: any, project: FolderContents, index: number, projects: Projects) => {
         const targets = Object.keys(project.projectJson.targets).reduce((acc: SimpleObject, target: string) => {
@@ -39,12 +57,6 @@ export function processTaskDependencies(projects: Projects, projectDependencies:
                         // grab task dep for all project dependents
                         const taskFromProjects = dependent.slice(1);
                         // NOTE - list project:target, dont list command itself
-                        // const commandsToRun = projects
-                        //     .filter(tmpProject => tmpProject.packageJson.name !== project.packageJson.name)
-                        //     .map(tmpProject => ({
-                        //         command: tmpProject.projectJson.targets[taskFromProjects],
-                        //         project: tmpProject.projectJson.id
-                        //     }));
                         const listOfProjectTargets = projects
                             .filter(tmpProject => tmpProject.packageJson.name !== project.packageJson.name)
                             .map(tmpProject => `${tmpProject.projectJson.id}:${taskFromProjects}`);
@@ -54,7 +66,6 @@ export function processTaskDependencies(projects: Projects, projectDependencies:
                         // grab task dep for this project
                         const taskFromThisProject = dependent
                         // NOTE - list project:target, dont list command itself
-                        // const commandFromThisProject = project.projectJson.targets[taskFromThisProject]
                         const projectTarget = `${project.projectJson.id}:${taskFromThisProject}`
                         dependencies.push(projectTarget)
                     }   
@@ -63,6 +74,7 @@ export function processTaskDependencies(projects: Projects, projectDependencies:
             acc[target] = {
                 ...project.projectJson.targets[target],
                 dependencies,
+                inputs: calculateInputHash(project.projectJson.targets[target].inputs),
             };
             return acc;
         }, {})
@@ -73,12 +85,6 @@ export function processTaskDependencies(projects: Projects, projectDependencies:
     // console.log('project-c test deps', projectWithTaskDeps['project-c'].targets.test.dependencies)
     
     return projectWithTaskDeps
-}
-export function processProjectDependencies(projects: Projects): ProjectDependencies[] {
-    return projects.map(project => ({
-        name: project.projectJson.id,
-        dependencies: Object.keys(project.packageJson.dependencies)
-    }))
 }
 
 export function getProjects(currentPath: string): Projects {

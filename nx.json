@@ -1,33 +1,17 @@
 {
     "namedInputs": {
         "env": [
-            {
-              "runtime": "node -v"
-            },
-            {
-              "runtime": "echo 'CACHE-BUST-1'"
-            }
+          {
+            "runtime": "node -v"
+          },
+          {
+            "env": "APP_ENV"
+          }
         ],
         "build": [
-        "{projectRoot}/src/**/*",
-        "!{projectRoot}/**/*.test.ts",
-        "!{projectRoot}/**/*.stories.tsx",
-        "!{projectRoot}/**/__fixtures__/**/*",
-        "!{projectRoot}/**/__tests__/**/*",
-        "!{projectRoot}/**/*.md"
-        ],
-        "test": [
-        "{projectRoot}/src/**/*",
-        "{workspaceRoot}/jest.preset.js",
-        "{workspaceRoot}/.browserslistrc",
-        "{projectRoot}/jest.config.js",
-        "!{projectRoot}/**/*.stories.tsx",
-        "!{projectRoot}/**/*.md"
+          "{projectRoot}/src/**/*",
+          "!{projectRoot}/**/*.test.ts",
+          "!{projectRoot}/**/__tests__/**/*"
         ]
-    },
-    "targetDefaults": {
-        "prepare": {
-            "inputs": ["env", "build", "^build"]
-        }
     }
 }
