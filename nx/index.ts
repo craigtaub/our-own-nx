@@ -1,5 +1,5 @@
-import { getProjects, processTaskDependencies } from "./helpers";
-import { TaskGraph } from "./types";
+import { getProjects, processTaskDependencies, executeChildProcess } from "./helpers";
+import { TaskGraph, SimpleObject } from "./types";
 
 const buildGraph = () => {
     // process projects in monorepo
@@ -13,15 +13,30 @@ const buildGraph = () => {
 
 }
 
+// in-memory
+const inputCache: SimpleObject = {}
+function getInputCache(key: string): any {
+    return inputCache[key]
+}
+function setInputCache(key: string, value: any): any {
+    inputCache[key] = value
+}
+
 const executeTask = (projectTarget: string, graph: TaskGraph): void => {
     const [ project, target ] = projectTarget.split(':');
-    const cacheKey =  graph[project].targets[target].inputs;
-    console.log('cacheKey', cacheKey)
-    // TODO - check key, if success return cache value, if fail run then store output
-    const output = `RUN ${projectTarget}`
-    // - TODO run command in child process
-
-    console.log(output)
+    // TODO - fix casting due to having input as string and array but 1 type
+    const cacheKey =  graph[project].targets[target].inputs as any as string;
+    // run output from cache if exist
+    let output = getInputCache(cacheKey);
+    if(output) {
+        console.log('HIT')
+    } else {
+        console.log('MISS')
+        output = `console.log("${projectTarget}")`
+        setInputCache(cacheKey, output)
+    }
+    // run command in async child process
+    executeChildProcess(output)
 }
 
 const run = () => {

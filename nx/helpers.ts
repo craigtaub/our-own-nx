@@ -2,8 +2,25 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import * as crypto from 'crypto'
-
+import {spawn} from 'node:child_process'
 import { Projects, ProjectDependencies, FolderContents, SimpleObject, TaskGraph, Target } from './types'
+
+export function executeChildProcess(command: string) {
+    // const subProcess = spawn(command)
+    const subProcess = spawn('node', ['-e', command])
+    subProcess.on('error', (err) => {
+        console.error('Failed to start subprocess.');
+    }); 
+    subProcess.stdout.on('data', (data) => {
+        console.log('Child data:', data.toString());
+    });
+    subProcess.on('close', (code) => {
+        if (code !== 0) {
+            console.log(`grep process exited with code ${code}`);
+        }
+    }); 
+      
+}
 
 function getHash(content: string) {				
     var hash = crypto.createHash('md5');
