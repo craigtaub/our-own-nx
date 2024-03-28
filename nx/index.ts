@@ -16,8 +16,10 @@ const buildGraph = () => {
 const executeTask = (projectTarget: string, graph: TaskGraph): void => {
     const [ project, target ] = projectTarget.split(':');
     const cacheKey =  graph[project].targets[target].inputs;
-    // TODO - check key, if fail run then store output
+    console.log('cacheKey', cacheKey)
+    // TODO - check key, if success return cache value, if fail run then store output
     const output = `RUN ${projectTarget}`
+    // - TODO run command in child process
 
     console.log(output)
 }

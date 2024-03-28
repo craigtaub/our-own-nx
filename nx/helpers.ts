@@ -1,8 +1,17 @@
 
 import * as fs from 'fs';
 import * as path from 'path';
+import * as crypto from 'crypto'
 
 import { Projects, ProjectDependencies, FolderContents, SimpleObject, TaskGraph, Target } from './types'
+
+function getHash(content: string) {				
+    var hash = crypto.createHash('md5');
+    //passing the data to be hashed
+    const data = hash.update(content, 'utf-8');
+    //Creating the hash in the required format
+    return data.digest('hex');
+}
 
 export function getConfig () {
     const configJsonPath = path.join('./', 'nx.json');
@@ -13,14 +22,24 @@ export function getConfig () {
 function calculateInputHash (inputs: Target['inputs']) {
     const config = getConfig()
     if (!inputs) {
+        // config.targetDefaults[target].inputs
         return 'default-hash'
     }
     const namedInputs = config.namedInputs
-    const taskInputs = inputs.map(input => {
-        return namedInputs[input]
+    const taskInputs = inputs.map((input: any) => {
+        return namedInputs[input].map((item: any) => {
+            if(item.runtime || item.env) {
+                // is runtime or env var
+                return getHash(JSON.stringify(item))
+            } else if (item.match('{projectRoot}')) {
+                // is source file
+                return getHash(item)
+            }
+        });
     })
     
-    return JSON.stringify(taskInputs)
+    // hash all hashes
+    return getHash(JSON.stringify(taskInputs))
 }
 
 // project-a
