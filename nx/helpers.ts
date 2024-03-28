@@ -6,20 +6,25 @@ import {spawn} from 'node:child_process'
 import { Projects, ProjectDependencies, FolderContents, SimpleObject, TaskGraph, Target } from './types'
 
 export function executeChildProcess(command: string) {
+    const outputs: string[] = []
     // const subProcess = spawn(command)
     const subProcess = spawn('node', ['-e', command])
     subProcess.on('error', (err) => {
-        console.error('Failed to start subprocess.');
+        const string = 'Failed to start subprocess.';
+        outputs.push(string)
+        console.error(string);
     }); 
     subProcess.stdout.on('data', (data) => {
-        console.log('Child data:', data.toString());
+        const string = `Child data:, ${data.toString()}`
+        outputs.push(string)
+        console.log(string);
     });
     subProcess.on('close', (code) => {
         if (code !== 0) {
             console.log(`grep process exited with code ${code}`);
         }
-    }); 
-      
+    });
+    return outputs
 }
 
 function getHash(content: string) {				

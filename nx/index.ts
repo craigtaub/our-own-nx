@@ -29,14 +29,21 @@ const executeTask = (projectTarget: string, graph: TaskGraph): void => {
     // run output from cache if exist
     let output = getInputCache(cacheKey);
     if(output) {
-        console.log('HIT')
+        console.log('HIT: ', cacheKey)
+        // print outputs - they are from stdout 
     } else {
-        console.log('MISS')
-        output = `console.log("${projectTarget}")`
-        setInputCache(cacheKey, output)
+        console.log('MISS: ', cacheKey)
+        // generate output
+        const command = `console.log("${projectTarget}")`
+        // run command in async child process
+        // TODO - collect outputs from command and then store
+        const outputs = executeChildProcess(command)
+        console.log('outputs', outputs)
+        if (!output) {
+            setInputCache(cacheKey, output)
+        }
     }
-    // run command in async child process
-    executeChildProcess(output)
+
 }
 
 const run = () => {
