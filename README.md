@@ -2,6 +2,7 @@
 ## Support
 - Build project and task dependency graph
 - Tasks -> project and workspace dependencies
+- Inputs cache -> builds input hash and checks against cache
 
 ## Doesnt support
 - Inputs Cache -> basic in-memory
