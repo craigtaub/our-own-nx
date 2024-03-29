@@ -1,4 +1,6 @@
 
+Run `npm run nx test`
+
 ## Support
 - Build project and task dependency graph
 - Tasks -> project and workspace dependencies
