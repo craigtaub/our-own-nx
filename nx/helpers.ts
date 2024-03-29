@@ -2,28 +2,12 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import * as crypto from 'crypto'
-import {spawn} from 'node:child_process'
-import { Projects, ProjectDependencies, FolderContents, SimpleObject, TaskGraph, Target } from './types'
+import { execSync } from 'node:child_process'
+import { Projects, FolderContents, SimpleObject, TaskGraph, Target } from './types'
 
 export function executeChildProcess(command: string) {
-    const outputs: string[] = []
-    // const subProcess = spawn(command)
-    const subProcess = spawn('node', ['-e', command])
-    subProcess.on('error', (err) => {
-        const string = 'Failed to start subprocess.';
-        outputs.push(string)
-        console.error(string);
-    }); 
-    subProcess.stdout.on('data', (data) => {
-        const string = `Child data:, ${data.toString()}`
-        outputs.push(string)
-        console.log(string);
-    });
-    subProcess.on('close', (code) => {
-        if (code !== 0) {
-            console.log(`grep process exited with code ${code}`);
-        }
-    });
+    // NOTE - use sync over async so can grab output
+    const outputs = execSync(`node -e "${command}"`, { encoding: 'utf8' })
     return outputs
 }
 
@@ -169,6 +153,27 @@ function readJsonFile(filePath: string): any {
 }
 
 // -------> OLD 2
+
+// ALT SPAWN
+// const subProcess = execSync(`node -e ${command}`)// ${', ['-e', command])
+// const subProcess = spawn('node', ['-e', command])
+// subProcess.on('error', (err) => {
+//     const string = 'Failed to start subprocess.';
+//     outputs.push(string)
+//     console.error(string);
+// }); 
+// subProcess.stdout.on('data', (data) => {
+//     const string = `Child data: ${data.toString()}`
+//     outputs.push(string)
+//     console.log(string);
+// });
+// subProcess.on('close', (code) => {
+//     if (code !== 0) {
+//         console.log(`grep process exited with code ${code}`);
+//     }
+// });
+// console.log('outputs', subProcess)
+
 
 // OLD FORMAT
 // for each project

@@ -40,7 +40,8 @@ export interface FolderContents {
 
 export type Projects = FolderContents[];
 
-export interface ProjectDependencies {
-    name: string;
-    dependencies: string[];
-}
+// NOT USED
+// export interface ProjectDependencies {
+//     name: string;
+//     dependencies: string[];
+// }
