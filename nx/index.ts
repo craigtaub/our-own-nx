@@ -22,7 +22,7 @@ function setInputCache(key: string, value: any): any {
 }
 
 const executeTask = (projectTarget: string, graph: TaskGraph): void => {
-    console.log('EXECUTE TASK')
+    console.log('EXECUTE TASK: ', projectTarget)
     const [ project, target ] = projectTarget.split(':');
     const cacheKey =  graph[project].targets[target].inputHash as string;
     // run output from cache if exist
@@ -32,8 +32,9 @@ const executeTask = (projectTarget: string, graph: TaskGraph): void => {
         console.log('(cached) terminal output', output)
     } else {
         console.log('MISS: ', cacheKey)
+
         // build command
-        const command = `console.log('${projectTarget}')`
+        const command = `console.log('${graph[project].targets[target].executor} ${(graph[project].targets[target].options?.command || '')}')`
         // run in child process and cache output
         const terminalOutput = executeChildProcess(command)
         console.log('terminal output', terminalOutput)

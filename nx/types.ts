@@ -15,7 +15,7 @@ export interface Target {
     };
     dependsOn?: string[];
     // optional but defaults
-    inputsList?: string[];
+    inputs?: string[];
     inputHash?: string;
     // processed into object
     dependencies?: string[];
@@ -40,9 +40,3 @@ export interface FolderContents {
 }
 
 export type Projects = FolderContents[];
-
-// NOT USED
-// export interface ProjectDependencies {
-//     name: string;
-//     dependencies: string[];
-// }

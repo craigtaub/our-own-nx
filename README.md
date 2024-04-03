@@ -14,15 +14,17 @@ See below for full list of support.
 
 ## Supports
 
-- Inputs - builds input hash and checks against cache
-- Inputs - includes workspace namedInputs in hash, supports `runtime` and `env`
+- Inputs - builds input hash and checks against cache, includes
+  - workspace `namedInputs` in hash, supports `runtime` and `env`
+  - workspace `targetDefaults`
 - Inputs - basic in-memory cache
 - Outputs - terminal based
 
 ## Doesn't support
 
-- Inputs - task level or basic string, doesn't check workspace config for targetDefaults
-- Inputs - source files hash the filename not the file contents 
+- Inputs 
+  - source files hash the filename not the file contents 
+  - project target configuration values (e.g. the command) -> TODO --- FIX THIS !!!
 - Outputs - not file based, no build artifacts from test or complication results
 
 # Task execution 💻

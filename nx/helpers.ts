@@ -25,10 +25,10 @@ export function getConfig () {
     return readJsonFile(configJsonPath);
 }
 
-function calculateInputHash (inputs: Target['inputsList']) {
+function calculateInputHash (rawInputs: Target['inputs'], target: string) {
     const config = getConfig()
+    const inputs = rawInputs || config.targetDefaults[target]?.inputs
     if (!inputs) {
-        // TODO - defaults are in config.targetDefaults[target].inputs
         return 'default-hash'
     }
     const namedInputs = config.namedInputs
@@ -77,7 +77,7 @@ export function processTaskDependencies(projects: Projects): TaskGraph {
             acc[target] = {
                 ...project.projectJson.targets[target],
                 dependencies,
-                inputHash: calculateInputHash(project.projectJson.targets[target].inputsList),
+                inputHash: calculateInputHash(project.projectJson.targets[target].inputs, target),
             };
             return acc;
         }, {})

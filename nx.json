@@ -1,4 +1,9 @@
 {
+    "targetDefaults": {
+        "prepare": {
+          "inputs": ["build"]
+        }
+    },
     "namedInputs": {
         "env": [
           {
