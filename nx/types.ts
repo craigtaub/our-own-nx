@@ -15,7 +15,8 @@ export interface Target {
     };
     dependsOn?: string[];
     // optional but defaults
-    inputs?: string[];
+    inputsList?: string[];
+    inputHash?: string;
     // processed into object
     dependencies?: string[];
 }

@@ -23,14 +23,14 @@ function setInputCache(key: string, value: any): any {
 }
 
 const executeTask = (projectTarget: string, graph: TaskGraph): void => {
+    console.log('EXECUTE TASK')
     const [ project, target ] = projectTarget.split(':');
-    // TODO - fix casting due to having input as string and array but 1 type
-    const cacheKey =  graph[project].targets[target].inputs as any as string;
+    const cacheKey =  graph[project].targets[target].inputHash as string;
     // run output from cache if exist
     let output = getInputCache(cacheKey);
     if(output) {
         console.log('HIT: ', cacheKey)
-        console.log('(cached) terminal output', cacheKey)
+        console.log('(cached) terminal output', output)
     } else {
         console.log('MISS: ', cacheKey)
         // build command
@@ -41,6 +41,7 @@ const executeTask = (projectTarget: string, graph: TaskGraph): void => {
         setInputCache(cacheKey, terminalOutput)
     }
 
+    console.log('\n')
 }
 
 const run = () => {
