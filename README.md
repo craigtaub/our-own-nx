@@ -34,7 +34,7 @@ Run `npm run nx test`
 
 ## Support
 
-- Build project and task dependency graph
+- Build project and task dependency graph, from monorepo
 - Detect Task project and workspace dependencies
 
 ## Doesnt support
@@ -42,29 +42,24 @@ Run `npm run nx test`
 - Source code analysis
 - Workspace defaults
 
-processTaskDependencies
-```
-project-a
-    targets
-        prepare
-            deps: null
-            command
-project-b
-    targets
-        prepare
-            deps: null
-            command
-project-c
-    targets
-        prepare
-            deps: null
-            command
-        test
-            deps: [
-                'project-c:prepare',
-                'project-a:prepare',
-                'this.project-a:prepare'
-            ]
+processTaskDependencies -> project-c targets
+```javascript
+{
+  prepare: {
+    executor: 'nx:run-command',
+    options: { command: 'echo file-c.ts' },
+    inputs: [ 'env', 'build' ],
+    dependencies: [],
+    inputHash: 'default-hash'
+  },
+  test: {
+    executor: '@nx/jest:jest',
+    options: { codeCoverage: true },
+    dependsOn: [ 'prepare', '^prepare' ],
+    dependencies: [ 'project-c:prepare', 'project-a:prepare', 'project-b:prepare' ],
+    inputHash: 'default-hash'
+  }
+}
 ```
 
 # Detect affected projects ⏭️

@@ -4,11 +4,10 @@ import { TaskGraph, SimpleObject } from "./types";
 const buildGraph = () => {
     // process projects in monorepo
     const projects = getProjects(process.cwd());
-    // console.log('projects', projects)
 
     // build task dependencies graph
     const graphDependencies = processTaskDependencies(projects)
-    // console.log('graphDependencies c test deps', graphDependencies['project-c'].targets.test.dependencies)
+    // console.log('graphDependencies c test deps', graphDependencies['project-c'].targets)
     return graphDependencies;
 
 }
