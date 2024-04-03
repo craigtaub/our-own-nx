@@ -1,19 +1,28 @@
 
 Run `npm run nx test`
 
+Features:
+
+- Local computation caching 📁
+- Task execution 💻
+- Build dependencies graph 📈
+- Detect affected projects ⏭️
+
+See below for full list of support.
+
 # Local computation caching 📁
 
 ## Supports
 
-- Inputs cache - builds input hash and checks against cache
-- Inputs cache - basic in-memory
+- Inputs - builds input hash and checks against cache
+- Inputs - includes workspace namedInputs in hash, supports `runtime` and `env`
+- Inputs - basic in-memory cache
 - Outputs - terminal based
 
 ## Doesn't support
 
 - Inputs - task level or basic string, doesn't check workspace config for targetDefaults
-- Inputs - source files hash filename file contents 
-    - TODO - CONFIRM THIS
+- Inputs - source files hash the filename not the file contents 
 - Outputs - not file based, no build artifacts from test or complication results
 
 # Task execution 💻
