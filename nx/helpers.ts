@@ -32,7 +32,8 @@ function calculateInputHash (inputs: Target['inputsList']) {
         return 'default-hash'
     }
     const namedInputs = config.namedInputs
-    const taskInputs = inputs.map((input: any) => {
+    const taskInputs = inputs.map((input: string) => {
+        // string or object based on property
         return namedInputs[input].map((item: any) => {
             if(item.runtime || item.env) {
                 // is runtime or env var
@@ -49,11 +50,9 @@ function calculateInputHash (inputs: Target['inputsList']) {
 }
 
 export function processTaskDependencies(projects: Projects): TaskGraph {
-    
-    const projectWithTaskDeps = projects.reduce((previousValue: any, project: FolderContents, index: number, projects: Projects) => {
+    return projects.reduce((previousValue: TaskGraph, project: FolderContents, _: number, projects: Projects) => {
         const targets = Object.keys(project.projectJson.targets).reduce((acc: SimpleObject, target: string) => {
             const dependsOn = project.projectJson.targets[target].dependsOn;
-            // TODO - type
             const dependencies = new Array();
             if (dependsOn) {
                 dependsOn.map(dependent => {
@@ -85,10 +84,6 @@ export function processTaskDependencies(projects: Projects): TaskGraph {
         previousValue[project.projectJson.id] =  { targets }
         return previousValue;
     }, {})
-
-    // console.log('project-c test deps', projectWithTaskDeps['project-c'].targets.test.dependencies)
-    
-    return projectWithTaskDeps
 }
 
 export function getProjects(currentPath: string): Projects {
