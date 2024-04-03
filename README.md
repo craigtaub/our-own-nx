@@ -1,20 +1,48 @@
 
 Run `npm run nx test`
 
+# Local computation caching 📁
+
+## Supports
+
+- Inputs cache - builds input hash and checks against cache
+- Inputs cache - basic in-memory
+- Outputs - terminal based
+
+## Doesn't support
+
+- Inputs - task level or basic string, doesnt check workspace config for targetDefaults
+- Inputs - source files hash filename file contents.
+- Outputs - not file based
+
+# Task execution 💻
+
+## Supports
+
+- Just console log for simplicity
+
+## Doesn't support
+
+- In sync so easier to manage output, not parallel
+- No custom task runners
+
+# Build dependencies graph 📈
+
 ## Support
+
 - Build project and task dependency graph
-- Tasks -> project and workspace dependencies
-- Inputs cache -> builds input hash and checks against cache
+- Detect Task project and workspace dependencies
 
 ## Doesnt support
-- Inputs Cache -> basic in-memory
-- Outputs -> terminal only, not file
-- Inputs 
-    - task level or basic string, doesnt check workspace config for targetDefaults
-    - source files hash filename file contents.
-- Task orchestration
-    - in sync so easier to manage output, but could be parallel
-- Task execution
-    - just console log for simplicity
-- Affected projects
-    - Manually sets which project has changed, could use git tools
+
+- Source code analysis
+- Workspace defaults
+
+# Detect affected projects ⏭️
+
+## Support
+
+- Hardcoded project name for simplicity
+
+## Doesnt support
+- Manually sets which project has changed, could use git tools
