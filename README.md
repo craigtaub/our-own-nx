@@ -17,6 +17,7 @@ See below for full list of support.
 - Inputs - builds input hash and checks against cache, includes
   - workspace `namedInputs` in hash, supports `runtime` and `env`
   - workspace `targetDefaults`
+  - project target configuration values (e.g. the command)
 - Inputs - basic in-memory cache
 - Outputs - terminal based
 
@@ -24,7 +25,6 @@ See below for full list of support.
 
 - Inputs 
   - source files hash the filename not the file contents 
-  - project target configuration values (e.g. the command) -> TODO --- FIX THIS !!!
 - Outputs - not file based, no build artifacts from test or complication results
 
 # Task execution 💻
@@ -48,12 +48,7 @@ See below for full list of support.
 - Build project and task dependency graph, from monorepo
 - Detect Task project and workspace dependencies
 
-## Doesnt support
-
-- Source code analysis
-- Workspace defaults
-
-processTaskDependencies -> project-c targets
+processTaskDependencies -> project-c targets (project.json + dependencies & inputHash)
 ```javascript
 {
   prepare: {
@@ -61,17 +56,23 @@ processTaskDependencies -> project-c targets
     options: { command: 'echo file-c.ts' },
     inputs: [ 'env', 'build' ],
     dependencies: [],
-    inputHash: 'default-hash'
+    inputHash: 'a2f8cfc4b0d31e14a8d2fed64dd80b35'
   },
   test: {
     executor: '@nx/jest:jest',
     options: { codeCoverage: true },
     dependsOn: [ 'prepare', '^prepare' ],
+    inputs: [ 'test' ],
     dependencies: [ 'project-c:prepare', 'project-a:prepare', 'project-b:prepare' ],
-    inputHash: 'default-hash'
+    inputHash: 'eb2467f508481945fd3d86403cfccda7'
   }
 }
 ```
+
+## Doesnt support
+
+- Source code analysis
+- Workspace defaults
 
 # Detect affected projects ⏭️
 
