@@ -25,12 +25,10 @@ export function getConfig () {
     return readJsonFile(configJsonPath);
 }
 
-function calculateInputHash (rawInputs: Target['inputs'], target: string) {
+function calculateInputHash (target: Target, targetName: string) {
     const config = getConfig()
-    const inputs = rawInputs || config.targetDefaults[target]?.inputs
-    if (!inputs) {
-        return 'default-hash'
-    }
+    // get inputs
+    const inputs = target.inputs || config.targetDefaults[targetName]?.inputs
     const namedInputs = config.namedInputs
     const taskInputs = inputs.map((input: string) => {
         // string or object based on property
@@ -45,8 +43,8 @@ function calculateInputHash (rawInputs: Target['inputs'], target: string) {
         });
     })
     
-    // hash all hashes
-    return getHash(JSON.stringify(taskInputs))
+    // hash all hashes, include inputs and target details
+    return getHash(JSON.stringify({ taskInputs, target, targetName }))
 }
 
 export function processTaskDependencies(projects: Projects): TaskGraph {
@@ -77,7 +75,7 @@ export function processTaskDependencies(projects: Projects): TaskGraph {
             acc[target] = {
                 ...project.projectJson.targets[target],
                 dependencies,
-                inputHash: calculateInputHash(project.projectJson.targets[target].inputs, target),
+                inputHash: calculateInputHash(project.projectJson.targets[target], target),
             };
             return acc;
         }, {})

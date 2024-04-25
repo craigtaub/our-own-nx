@@ -14,7 +14,9 @@
           }
         ],
         "build": [
-          "{projectRoot}/src/**/*",
+          "{projectRoot}/src/**/*"
+        ],
+        "test": [
           "!{projectRoot}/**/*.test.ts",
           "!{projectRoot}/**/__tests__/**/*"
         ]

@@ -50,8 +50,11 @@ const run = () => {
     
     const graph = buildGraph();
 
-    const affectedProjects = ['project-c'] // TODO - use Git cli to check file changes
+    // MOCK SETUP
+    const affectedProjects = ['project-c'] // use Git cli to check file changes
+    setInputCache('aa4bb188cdcb3d13609babb4be52b61a', 'nx:run-command echo file-b.ts') // cached project-b:prepare already
 
+    
     affectedProjects.map((affected) => {
         // grab command - command located inside "graph[affected].targets[command]"
         const thisProjectTarget = `${affected}:${command}`
