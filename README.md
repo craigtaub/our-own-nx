@@ -1,4 +1,6 @@
 
+NX in 100 lines of code.
+
 Run `npm run nx test`
 
 Features:
@@ -48,7 +50,7 @@ See below for full list of support.
 - Build project and task dependency graph, from monorepo
 - Detect Task project and workspace dependencies
 
-processTaskDependencies -> project-c targets (project.json + dependencies & inputHash)
+`processTaskDependencies()` => project-c targets (project.json + dependencies & inputHash)
 ```javascript
 {
   prepare: {
